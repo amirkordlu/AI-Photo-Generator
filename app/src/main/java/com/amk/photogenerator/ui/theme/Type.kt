@@ -12,11 +12,11 @@ import com.amk.photogenerator.R
 
 val Typography = Typography(
     bodyLarge = TextStyle(
-        fontFamily = FontFamily.Default,
-        fontWeight = FontWeight.Normal,
-        fontSize = 16.sp,
-        lineHeight = 24.sp,
-        letterSpacing = 0.5.sp
+        fontSize = 38.sp,
+        fontFamily = FontFamily(Font(R.font.dana_medium)),
+        fontWeight = FontWeight(400),
+        color = Color(0xFF424242),
+        textAlign = TextAlign.Center,
     ),
 
     bodyMedium = TextStyle(

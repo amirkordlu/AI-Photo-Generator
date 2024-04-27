@@ -12,6 +12,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.amk.photogenerator.di.myModules
+import com.amk.photogenerator.ui.features.loginScreen.LoginScreen
 import com.amk.photogenerator.ui.features.mainScreen.MainScreen
 import com.amk.photogenerator.ui.theme.PhotoGeneratorTheme
 import com.amk.photogenerator.util.MyScreens
@@ -50,6 +51,10 @@ fun PhotoGeneratorUI() {
 
         composable(MyScreens.MainScreen.route) {
             MainScreen()
+        }
+
+        composable(MyScreens.LoginScreen.route) {
+            LoginScreen()
         }
 
     }

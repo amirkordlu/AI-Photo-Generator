@@ -1,6 +1,5 @@
 package com.amk.photogenerator.ui.features.mainScreen
 
-import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -21,6 +20,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.amk.photogenerator.R
 import com.amk.photogenerator.ui.theme.PhotoGeneratorTheme
+import com.amk.photogenerator.util.MyScreens
+import dev.burnoo.cokoin.navigation.getNavController
 
 @Preview(showBackground = true)
 @Composable
@@ -36,6 +37,7 @@ fun MainScreenPreview() {
 
 @Composable
 fun MainScreen() {
+    val navigation = getNavController()
 
     Column(
         modifier = Modifier
@@ -44,13 +46,15 @@ fun MainScreen() {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.SpaceBetween
     ) {
-        MainToolbar()
+        MainToolbar {
+            navigation.navigate(MyScreens.LoginScreen.route)
+        }
     }
 
 }
 
 @Composable
-fun MainToolbar() {
+fun MainToolbar(onProfileClicked: () -> Unit) {
 
     Box(modifier = Modifier.fillMaxSize()) {
         Image(
@@ -63,7 +67,7 @@ fun MainToolbar() {
                 .fillMaxWidth()
                 .padding(top = 16.dp, start = 16.dp)
         ) {
-            IconButton(onClick = { /*TODO*/ }) {
+            IconButton(onClick = { onProfileClicked.invoke() }) {
                 Image(
                     painter = painterResource(R.drawable.ic_account),
                     contentDescription = "Account"
