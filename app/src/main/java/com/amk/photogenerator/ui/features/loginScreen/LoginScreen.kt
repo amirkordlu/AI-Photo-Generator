@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Divider
@@ -21,16 +20,18 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.airbnb.lottie.compose.LottieAnimation
+import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.LottieConstants
+import com.airbnb.lottie.compose.rememberLottieComposition
 import com.amk.photogenerator.R
-import com.amk.photogenerator.ui.theme.BlueInfo
-import com.amk.photogenerator.ui.theme.GreenPositive
-import com.amk.photogenerator.ui.theme.OrangeWarning
 import com.amk.photogenerator.ui.theme.PhotoGeneratorTheme
 import com.amk.photogenerator.ui.theme.Typography
 
@@ -65,20 +66,11 @@ fun LoginScreen() {
 @Composable
 fun Welcome() {
     Column(
-        modifier = Modifier.padding(bottom = 48.dp),
+        modifier = Modifier.padding(bottom = 48.dp, top = 16.dp),
         horizontalAlignment = Alignment.CenterHorizontally) {
-        Text(text = "به", style = Typography.bodyLarge)
-        Text(text = "فیلانی", style = Typography.bodyLarge)
-        Row {
-            Icon(
-                painter = painterResource(R.drawable.ic_smile),
-                contentDescription = null,
-                tint = GreenPositive,
-                modifier = Modifier.size(54.dp)
-            )
-            Spacer(modifier = Modifier.padding(4.dp))
-            Text(text = "!خوش آمدید", style = Typography.bodyLarge)
-        }
+
+        MainAnimation()
+
     }
 }
 
@@ -163,3 +155,19 @@ fun LoginWithAccounts() {
 
     }
 }
+
+@Composable
+fun MainAnimation() {
+    val composition by rememberLottieComposition(
+        LottieCompositionSpec.RawRes(R.raw.signup_animation)
+    )
+
+    LottieAnimation(
+        modifier = Modifier
+            .size(270.dp)
+            .padding(top = 16.dp, bottom = 36.dp),
+        composition = composition,
+        iterations = LottieConstants.IterateForever
+    )
+}
+

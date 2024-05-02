@@ -74,4 +74,7 @@ dependencies {
     implementation("dev.burnoo:cokoin:0.3.2")
     implementation("dev.burnoo:cokoin-android-viewmodel:0.3.2")
     implementation("dev.burnoo:cokoin-android-navigation:0.3.2")
+
+    // Lottie
+    implementation("com.airbnb.android:lottie-compose:5.2.0")
 }
