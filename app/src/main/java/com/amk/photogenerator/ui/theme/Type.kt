@@ -12,7 +12,7 @@ import com.amk.photogenerator.R
 
 val Typography = Typography(
     bodyLarge = TextStyle(
-        fontSize = 38.sp,
+        fontSize = 20.sp,
         fontFamily = FontFamily(Font(R.font.dana_medium)),
         fontWeight = FontWeight(400),
         color = Color(0xFF424242),
