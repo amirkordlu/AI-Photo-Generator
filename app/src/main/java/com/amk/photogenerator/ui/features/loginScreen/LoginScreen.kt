@@ -34,6 +34,8 @@ import com.airbnb.lottie.compose.rememberLottieComposition
 import com.amk.photogenerator.R
 import com.amk.photogenerator.ui.theme.PhotoGeneratorTheme
 import com.amk.photogenerator.ui.theme.Typography
+import com.amk.photogenerator.util.MyScreens
+import dev.burnoo.cokoin.navigation.getNavController
 
 @Preview(showBackground = true)
 @Composable
@@ -49,6 +51,7 @@ fun LoginScreenPreview() {
 
 @Composable
 fun LoginScreen() {
+    val navigation = getNavController()
 
     Column(
         modifier = Modifier
@@ -58,7 +61,9 @@ fun LoginScreen() {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Welcome()
-        LoginSection()
+        LoginSection(
+            onLoginClicked = { navigation.navigate(MyScreens.OTPScreen.route) },
+            onSignUpClicked = { navigation.navigate(MyScreens.SignUpScreen.route) })
         LoginWithAccounts()
     }
 }
@@ -67,7 +72,8 @@ fun LoginScreen() {
 fun Welcome() {
     Column(
         modifier = Modifier.padding(bottom = 48.dp, top = 16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally) {
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
 
         MainAnimation()
 
@@ -75,14 +81,14 @@ fun Welcome() {
 }
 
 @Composable
-fun LoginSection() {
+fun LoginSection(onLoginClicked: () -> Unit, onSignUpClicked: () -> Unit) {
     Column(modifier = Modifier.padding(bottom = 32.dp)) {
         Button(
             modifier = Modifier
                 .fillMaxWidth(0.75f)
                 .padding(top = 8.dp, bottom = 16.dp)
                 .height(56.dp),
-            onClick = {},
+            onClick = { onLoginClicked.invoke() },
             shape = RoundedCornerShape(36.dp),
             colors = ButtonDefaults.buttonColors(Color(0xFF7853A1))
         ) {
@@ -99,7 +105,7 @@ fun LoginSection() {
                 .fillMaxWidth(0.75f)
                 .padding(top = 8.dp, bottom = 16.dp)
                 .height(56.dp),
-            onClick = {},
+            onClick = { onSignUpClicked.invoke() },
             shape = RoundedCornerShape(36.dp),
             colors = ButtonDefaults.buttonColors(Color(0xFFFAF6FF))
         ) {

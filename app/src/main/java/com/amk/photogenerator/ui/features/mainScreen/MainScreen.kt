@@ -1,6 +1,5 @@
 package com.amk.photogenerator.ui.features.mainScreen
 
-import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -21,7 +20,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -32,8 +30,6 @@ import com.amk.photogenerator.ui.theme.Typography
 import com.amk.photogenerator.util.MyScreens
 import com.amk.photogenerator.util.getCurrentTime
 import dev.burnoo.cokoin.navigation.getNavController
-import java.time.LocalDateTime
-import java.util.Calendar
 
 @Preview(showBackground = true)
 @Composable
