@@ -1,5 +1,8 @@
 package com.amk.photogenerator.util
 
+import android.content.Context
+import android.util.Log
+import kotlinx.coroutines.CoroutineExceptionHandler
 import java.util.Calendar
 
 
@@ -28,3 +31,8 @@ fun getCurrentTime(): String {
         }
     }
 }
+
+val coroutineExceptionHandler = CoroutineExceptionHandler { _, throwable ->
+    Log.e("Error", "error -> ${throwable.message}")
+}
+

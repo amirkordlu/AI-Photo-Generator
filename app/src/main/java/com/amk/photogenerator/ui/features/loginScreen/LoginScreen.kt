@@ -1,5 +1,7 @@
 package com.amk.photogenerator.ui.features.loginScreen
 
+import android.app.Activity
+import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -24,9 +26,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.LottieConstants
@@ -34,8 +40,6 @@ import com.airbnb.lottie.compose.rememberLottieComposition
 import com.amk.photogenerator.R
 import com.amk.photogenerator.ui.theme.PhotoGeneratorTheme
 import com.amk.photogenerator.ui.theme.Typography
-import com.amk.photogenerator.util.MyScreens
-import dev.burnoo.cokoin.navigation.getNavController
 
 @Preview(showBackground = true)
 @Composable
@@ -51,7 +55,13 @@ fun LoginScreenPreview() {
 
 @Composable
 fun LoginScreen() {
-    val navigation = getNavController()
+    val context = LocalContext.current
+    val activity = LocalContext.current as Activity
+    val lifecycleOwner: LifecycleOwner = LocalLifecycleOwner.current
+    val viewModel: AccountViewModel = viewModel()
+
+    // Get login status
+    viewModel.getBazaarLogin(context, lifecycleOwner)
 
     Column(
         modifier = Modifier
@@ -60,40 +70,71 @@ fun LoginScreen() {
         verticalArrangement = Arrangement.Bottom,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Welcome()
-        LoginSection(
-            onLoginClicked = { navigation.navigate(MyScreens.OTPScreen.route) },
-            onSignUpClicked = { navigation.navigate(MyScreens.SignUpScreen.route) })
-        LoginWithAccounts()
-    }
-}
-
-@Composable
-fun Welcome() {
-    Column(
-        modifier = Modifier.padding(bottom = 48.dp, top = 16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-
         MainAnimation()
 
+        BazaarButton {
+            viewModel.getBazaarLogin(context, lifecycleOwner)
+            if (viewModel.hasLogin.value) {
+                Toast.makeText(context, "شما وارد حساب کاربری خود شده‌اید", Toast.LENGTH_SHORT)
+                    .show()
+            } else {
+                viewModel.signInBazaar(context, activity, lifecycleOwner)
+            }
+        }
+
+
+
+        LoginSection(
+            addPointClicked = {
+                viewModel.saveDataInBazaar(context, lifecycleOwner, "Test App")
+            }
+        ) {
+            viewModel.getSavedDataFromBazaar(context, lifecycleOwner)
+            Toast.makeText(context, viewModel.getSavedData.value, Toast.LENGTH_SHORT).show()
+        }
+
+        LoginWithAccounts()
+
     }
 }
 
 @Composable
-fun LoginSection(onLoginClicked: () -> Unit, onSignUpClicked: () -> Unit) {
+fun BazaarButton(signInClicked: () -> Unit) {
+    Button(
+        modifier = Modifier
+            .fillMaxWidth(0.75f)
+            .padding(top = 8.dp, bottom = 16.dp)
+            .height(56.dp),
+        onClick = { signInClicked.invoke() },
+        shape = RoundedCornerShape(36.dp),
+        colors = ButtonDefaults.buttonColors(Color(0xFF0EA960))
+    ) {
+
+        Icon(painterResource(R.drawable.ic_bazaar), null, modifier = Modifier.size(34.dp))
+
+        Text(
+            text = "ورود با بازار",
+            style = Typography.bodyMedium,
+            color = Color.White
+        )
+
+    }
+}
+
+@Composable
+fun LoginSection(addPointClicked: () -> Unit, readPointClicked: () -> Unit) {
     Column(modifier = Modifier.padding(bottom = 32.dp)) {
         Button(
             modifier = Modifier
                 .fillMaxWidth(0.75f)
                 .padding(top = 8.dp, bottom = 16.dp)
                 .height(56.dp),
-            onClick = { onLoginClicked.invoke() },
+            onClick = { addPointClicked.invoke() },
             shape = RoundedCornerShape(36.dp),
             colors = ButtonDefaults.buttonColors(Color(0xFF7853A1))
         ) {
             Text(
-                text = "ورود",
+                text = "اضافه کردن سکه",
                 style = Typography.bodyMedium,
                 color = Color.White
             )
@@ -105,12 +146,12 @@ fun LoginSection(onLoginClicked: () -> Unit, onSignUpClicked: () -> Unit) {
                 .fillMaxWidth(0.75f)
                 .padding(top = 8.dp, bottom = 16.dp)
                 .height(56.dp),
-            onClick = { onSignUpClicked.invoke() },
+            onClick = { readPointClicked.invoke() },
             shape = RoundedCornerShape(36.dp),
             colors = ButtonDefaults.buttonColors(Color(0xFFFAF6FF))
         ) {
             Text(
-                text = "ثبت‌نام",
+                text = "تعداد سکه",
                 style = Typography.bodyMedium,
                 color = Color(0xFF7853A1)
             )
@@ -121,6 +162,8 @@ fun LoginSection(onLoginClicked: () -> Unit, onSignUpClicked: () -> Unit) {
 
 @Composable
 fun LoginWithAccounts() {
+    val context = LocalContext.current
+
     Column(
         modifier = Modifier.padding(bottom = 50.dp, top = 16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
@@ -155,7 +198,7 @@ fun LoginWithAccounts() {
 
         Spacer(modifier = Modifier.padding(4.dp))
 
-        IconButton(onClick = {}) {
+        IconButton(onClick = { Toast.makeText(context, "بزودی!", Toast.LENGTH_SHORT).show() }) {
             Icon(painter = painterResource(R.drawable.ic_google), contentDescription = null)
         }
 
