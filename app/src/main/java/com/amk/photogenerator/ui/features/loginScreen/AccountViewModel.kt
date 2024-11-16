@@ -6,8 +6,6 @@ import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.amk.photogenerator.util.coroutineExceptionHandler
@@ -18,7 +16,6 @@ import com.farsitel.bazaar.storage.BazaarStorage
 import com.farsitel.bazaar.storage.callback.BazaarStorageCallback
 import com.farsitel.bazaar.util.ext.toReadableString
 import kotlinx.coroutines.launch
-import kotlin.math.log
 
 class AccountViewModel(
 
@@ -28,9 +25,9 @@ class AccountViewModel(
     val hasLogin = mutableStateOf(false)
 
     val savedData = mutableStateOf("")
-    val getSavedData = mutableStateOf("")
+    val points = mutableStateOf(0)
 
-    // Bazaar InApp Login
+
     fun signInBazaar(context: Context, activity: Activity, lifecycleOwner: LifecycleOwner) {
         viewModelScope.launch {
 
@@ -58,27 +55,10 @@ class AccountViewModel(
                     hasLogin.value = true
                     Log.v("AccountViewModel", account.accountId.toString())
                 }
-
-
             }
         }
     }
 
-    // خواندن داده‌های ذخیره شده از Bazaar
-    fun getSavedDataFromBazaar(context: Context, lifecycleOwner: LifecycleOwner) {
-        viewModelScope.launch(coroutineExceptionHandler) {
-            BazaarStorage.getSavedData(
-                context,
-                lifecycleOwner,
-                callback = BazaarStorageCallback { response ->
-                    getSavedData.value = response?.data?.toReadableString().toString()
-                }
-
-            )
-        }
-    }
-
-    // ذخیره داده در Bazaar و سپس بازیابی آن
     fun saveDataInBazaar(context: Context, lifecycleOwner: LifecycleOwner, data: String) {
         viewModelScope.launch(coroutineExceptionHandler) {
             BazaarStorage.saveData(context,
@@ -87,6 +67,35 @@ class AccountViewModel(
                 BazaarStorageCallback { savedResponse ->
                     savedData.value = savedResponse?.data?.toReadableString().toString()
                 })
+        }
+    }
+
+    fun loadPointsFromBazaar(context: Context, lifecycleOwner: LifecycleOwner) {
+        viewModelScope.launch(coroutineExceptionHandler) {
+            BazaarStorage.getSavedData(
+                context,
+                lifecycleOwner,
+                callback = BazaarStorageCallback { response ->
+                    val currentPoints = response?.data?.toReadableString()?.toIntOrNull() ?: 0
+                    points.value = currentPoints
+                }
+            )
+        }
+    }
+
+    fun addPoints(context: Context, lifecycleOwner: LifecycleOwner, increment: Int) {
+        val newPoints = points.value + increment
+        saveDataInBazaar(context, lifecycleOwner, newPoints.toString())
+        points.value = newPoints
+    }
+
+    fun subtractPoints(context: Context, lifecycleOwner: LifecycleOwner, decrement: Int) {
+        val newPoints = points.value - decrement
+        if (newPoints >= 0) {
+            saveDataInBazaar(context, lifecycleOwner, newPoints.toString())
+            points.value = newPoints
+        } else {
+            Log.v("AccountViewModel", "امتیاز ناکافی")
         }
     }
 

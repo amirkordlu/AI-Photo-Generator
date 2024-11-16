@@ -60,8 +60,9 @@ fun LoginScreen() {
     val lifecycleOwner: LifecycleOwner = LocalLifecycleOwner.current
     val viewModel: AccountViewModel = viewModel()
 
-    // Get login status
+    // Get login and points
     viewModel.getBazaarLogin(context, lifecycleOwner)
+    viewModel.loadPointsFromBazaar(context, lifecycleOwner)
 
     Column(
         modifier = Modifier
@@ -82,16 +83,14 @@ fun LoginScreen() {
             }
         }
 
+        Text(text = "امتیازات فعلی: ${viewModel.points.value}")
 
-
-        LoginSection(
-            addPointClicked = {
-                viewModel.saveDataInBazaar(context, lifecycleOwner, "Test App")
-            }
-        ) {
-            viewModel.getSavedDataFromBazaar(context, lifecycleOwner)
-            Toast.makeText(context, viewModel.getSavedData.value, Toast.LENGTH_SHORT).show()
-        }
+        PointsSection(addPointClicked = {
+            viewModel.addPoints(context, lifecycleOwner, 10)
+        },
+            subtractPointClicked = {
+                viewModel.subtractPoints(context, lifecycleOwner, 2)
+            })
 
         LoginWithAccounts()
 
@@ -122,7 +121,7 @@ fun BazaarButton(signInClicked: () -> Unit) {
 }
 
 @Composable
-fun LoginSection(addPointClicked: () -> Unit, readPointClicked: () -> Unit) {
+fun PointsSection(addPointClicked: () -> Unit, subtractPointClicked: () -> Unit) {
     Column(modifier = Modifier.padding(bottom = 32.dp)) {
         Button(
             modifier = Modifier
@@ -146,12 +145,12 @@ fun LoginSection(addPointClicked: () -> Unit, readPointClicked: () -> Unit) {
                 .fillMaxWidth(0.75f)
                 .padding(top = 8.dp, bottom = 16.dp)
                 .height(56.dp),
-            onClick = { readPointClicked.invoke() },
+            onClick = { subtractPointClicked.invoke() },
             shape = RoundedCornerShape(36.dp),
             colors = ButtonDefaults.buttonColors(Color(0xFFFAF6FF))
         ) {
             Text(
-                text = "تعداد سکه",
+                text = "کاهش سکه",
                 style = Typography.bodyMedium,
                 color = Color(0xFF7853A1)
             )
