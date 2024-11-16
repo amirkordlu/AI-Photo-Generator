@@ -1,7 +1,9 @@
 package com.amk.photogenerator.ui.features.loginScreen
 
 import android.app.Activity
+import android.util.Log
 import android.widget.Toast
+import androidx.activity.compose.LocalActivityResultRegistryOwner
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -22,6 +24,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -40,6 +43,7 @@ import com.airbnb.lottie.compose.rememberLottieComposition
 import com.amk.photogenerator.R
 import com.amk.photogenerator.ui.theme.PhotoGeneratorTheme
 import com.amk.photogenerator.ui.theme.Typography
+import com.amk.photogenerator.util.RSA_KEY
 
 @Preview(showBackground = true)
 @Composable
@@ -58,7 +62,32 @@ fun LoginScreen() {
     val context = LocalContext.current
     val activity = LocalContext.current as Activity
     val lifecycleOwner: LifecycleOwner = LocalLifecycleOwner.current
+    val activityResultRegistry = LocalActivityResultRegistryOwner.current!!.activityResultRegistry
+
     val viewModel: AccountViewModel = viewModel()
+    val paymentViewModel: PaymentViewModel = viewModel()
+
+
+
+    LaunchedEffect(Unit) {
+        paymentViewModel.initSecurityCheck(RSA_KEY)
+        paymentViewModel.initPaymentConfiguration()
+        paymentViewModel.initPayment(context)
+        paymentViewModel.connectToBazaar(
+            onSuccess = {
+                // اتصال موفق
+                Log.v("LoginScreen", "Connected to Bazaar")
+            },
+            onFailure = { throwable ->
+                // خطا در اتصال
+                Log.v("LoginScreen", "Failed to connect: ${throwable.message}")
+            },
+            onDisconnected = {
+                // قطع اتصال
+                Log.v("LoginScreen", "Disconnected from Bazaar")
+            }
+        )
+    }
 
     // Get login and points
     viewModel.getBazaarLogin(context, lifecycleOwner)
@@ -72,6 +101,26 @@ fun LoginScreen() {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         MainAnimation()
+
+        Button(onClick = {
+            paymentViewModel.startPurchase(
+                "10point",
+                "purchasePayload",
+                activityResultRegistry,
+                onFailure = { Toast.makeText(context, "ناموفق", Toast.LENGTH_SHORT).show() },
+                onSuccess = { purchaseEntity ->
+                    viewModel.addPoints(context, lifecycleOwner, 10)
+                    paymentViewModel.consumePurchase(purchaseEntity.purchaseToken, {
+                        Toast.makeText(
+                            context,
+                            "خرید موفق" + purchaseEntity.purchaseToken,
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }, {})
+                })
+        }) {
+            Text("خرید")
+        }
 
         BazaarButton {
             viewModel.getBazaarLogin(context, lifecycleOwner)

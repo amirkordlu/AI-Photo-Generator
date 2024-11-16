@@ -82,4 +82,8 @@ dependencies {
     implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
     implementation("com.github.cafebazaar.CafeBazaarAuth:auth:1.0.2")
+
+    // Bazaar Poolakey
+    implementation("com.github.cafebazaar.Poolakey:poolakey:2.2.0")
+
 }
