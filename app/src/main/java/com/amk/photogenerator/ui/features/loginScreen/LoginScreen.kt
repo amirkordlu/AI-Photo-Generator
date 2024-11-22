@@ -4,6 +4,8 @@ import android.app.Activity
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.LocalActivityResultRegistryOwner
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -44,6 +46,9 @@ import com.amk.photogenerator.R
 import com.amk.photogenerator.ui.theme.PhotoGeneratorTheme
 import com.amk.photogenerator.ui.theme.Typography
 import com.amk.photogenerator.util.RSA_KEY
+import com.farsitel.bazaar.core.BazaarSignIn
+import com.farsitel.bazaar.core.model.BazaarSignInOptions
+import com.farsitel.bazaar.core.model.SignInOption
 
 @Preview(showBackground = true)
 @Composable
@@ -60,14 +65,11 @@ fun LoginScreenPreview() {
 @Composable
 fun LoginScreen() {
     val context = LocalContext.current
-    val activity = LocalContext.current as Activity
     val lifecycleOwner: LifecycleOwner = LocalLifecycleOwner.current
     val activityResultRegistry = LocalActivityResultRegistryOwner.current!!.activityResultRegistry
 
     val viewModel: AccountViewModel = viewModel()
     val paymentViewModel: PaymentViewModel = viewModel()
-
-
 
     LaunchedEffect(Unit) {
         paymentViewModel.initSecurityCheck(RSA_KEY)
@@ -75,23 +77,20 @@ fun LoginScreen() {
         paymentViewModel.initPayment(context)
         paymentViewModel.connectToBazaar(
             onSuccess = {
-                // اتصال موفق
                 Log.v("LoginScreen", "Connected to Bazaar")
             },
             onFailure = { throwable ->
-                // خطا در اتصال
                 Log.v("LoginScreen", "Failed to connect: ${throwable.message}")
             },
             onDisconnected = {
-                // قطع اتصال
                 Log.v("LoginScreen", "Disconnected from Bazaar")
             }
         )
+        // Get login and points
+        viewModel.getBazaarLogin(context, lifecycleOwner)
+        viewModel.loadPointsFromBazaar(context, lifecycleOwner)
     }
 
-    // Get login and points
-    viewModel.getBazaarLogin(context, lifecycleOwner)
-    viewModel.loadPointsFromBazaar(context, lifecycleOwner)
 
     Column(
         modifier = Modifier
@@ -103,36 +102,68 @@ fun LoginScreen() {
         MainAnimation()
 
         Button(onClick = {
-            paymentViewModel.startPurchase(
-                "10point",
-                "purchasePayload",
-                activityResultRegistry,
-                onFailure = { Toast.makeText(context, "ناموفق", Toast.LENGTH_SHORT).show() },
-                onSuccess = { purchaseEntity ->
-                    viewModel.addPoints(context, lifecycleOwner, 10)
-                    paymentViewModel.consumePurchase(purchaseEntity.purchaseToken, {
-                        Toast.makeText(
-                            context,
-                            "خرید موفق" + purchaseEntity.purchaseToken,
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }, {})
-                })
+            if (viewModel.points.value != null && viewModel.hasLogin.value) {
+                paymentViewModel.startPurchase(
+                    "10point",
+                    "purchasePayload",
+                    activityResultRegistry,
+                    onFailure = { Toast.makeText(context, "ناموفق", Toast.LENGTH_SHORT).show() },
+                    onSuccess = { purchaseEntity ->
+                        viewModel.addPoints(context, lifecycleOwner, 10)
+                        paymentViewModel.consumePurchase(purchaseEntity.purchaseToken, {
+                            Toast.makeText(
+                                context,
+                                "خرید موفق" + purchaseEntity.purchaseToken,
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }, {})
+                    })
+            } else {
+                Toast.makeText(
+                    context,
+                    "لطفا ابتدا وارد حساب کاربری خود شوید",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
         }) {
             Text("خرید")
         }
 
-        BazaarButton {
-            viewModel.getBazaarLogin(context, lifecycleOwner)
-            if (viewModel.hasLogin.value) {
-                Toast.makeText(context, "شما وارد حساب کاربری خود شده‌اید", Toast.LENGTH_SHORT)
-                    .show()
-            } else {
-                viewModel.signInBazaar(context, activity, lifecycleOwner)
+        val bazaarSignInLauncher = rememberLauncherForActivityResult(
+            contract = ActivityResultContracts.StartActivityForResult()
+        ) { result ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                viewModel.handleSignInResult(result.data)
             }
         }
 
-        Text(text = "امتیازات فعلی: ${viewModel.points.value}")
+        BazaarButton {
+            if (!viewModel.hasLogin.value) {
+                val signInOption = BazaarSignInOptions.Builder(SignInOption.DEFAULT_SIGN_IN).build()
+                val client = BazaarSignIn.getClient(context, signInOption)
+                val intent = client.getSignInIntent()
+
+                bazaarSignInLauncher.launch(intent)
+            } else {
+                Toast.makeText(context, "شما قبلاً وارد شده‌اید", Toast.LENGTH_SHORT).show()
+            }
+
+        }
+
+        Text(
+            text = when (val currentPoints = viewModel.points.value) {
+                null -> "در حال بارگذاری..."
+                else -> "امتیاز فعلی: $currentPoints"
+            },
+            style = Typography.bodyMedium,
+            modifier = Modifier.padding(top = 8.dp)
+        )
+
+        if (viewModel.hasLogin.value) {
+            LaunchedEffect(viewModel.hasLogin.value) {
+                viewModel.loadPointsFromBazaar(context, lifecycleOwner)
+            }
+        }
 
         PointsSection(addPointClicked = {
             viewModel.addPoints(context, lifecycleOwner, 10)

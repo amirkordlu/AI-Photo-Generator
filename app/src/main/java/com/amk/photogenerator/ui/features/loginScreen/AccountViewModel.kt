@@ -1,17 +1,14 @@
 package com.amk.photogenerator.ui.features.loginScreen
 
-import android.app.Activity
 import android.content.Context
+import android.content.Intent
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
-import androidx.core.app.ActivityCompat
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.amk.photogenerator.util.coroutineExceptionHandler
 import com.farsitel.bazaar.core.BazaarSignIn
-import com.farsitel.bazaar.core.model.BazaarSignInOptions
-import com.farsitel.bazaar.core.model.SignInOption
 import com.farsitel.bazaar.storage.BazaarStorage
 import com.farsitel.bazaar.storage.callback.BazaarStorageCallback
 import com.farsitel.bazaar.util.ext.toReadableString
@@ -25,21 +22,14 @@ class AccountViewModel(
     val hasLogin = mutableStateOf(false)
 
     val savedData = mutableStateOf("")
-    val points = mutableStateOf(0)
+    val points = mutableStateOf<Int?>(null)
 
-
-    fun signInBazaar(context: Context, activity: Activity, lifecycleOwner: LifecycleOwner) {
-        viewModelScope.launch {
-
-            val signInOption = BazaarSignInOptions.Builder(SignInOption.DEFAULT_SIGN_IN).build()
-            val client = BazaarSignIn.getClient(context, signInOption)
-
-            val intent = client.getSignInIntent()
-
-            ActivityCompat.startActivityForResult(activity, intent, 1, null)
-
+    fun handleSignInResult(intent: Intent?) {
+        val account = intent?.let { BazaarSignIn.getSignedInAccountFromIntent(it) }
+        if (account != null && account.accountId.isNotEmpty()) {
+            userID.value = account.accountId
+            hasLogin.value = true
         }
-
     }
 
     fun getBazaarLogin(context: Context, lifecycleOwner: LifecycleOwner) {
@@ -76,7 +66,7 @@ class AccountViewModel(
                 context,
                 lifecycleOwner,
                 callback = BazaarStorageCallback { response ->
-                    val currentPoints = response?.data?.toReadableString()?.toIntOrNull() ?: 0
+                    val currentPoints = response?.data?.toReadableString()?.toIntOrNull()
                     points.value = currentPoints
                 }
             )
@@ -84,13 +74,14 @@ class AccountViewModel(
     }
 
     fun addPoints(context: Context, lifecycleOwner: LifecycleOwner, increment: Int) {
-        val newPoints = points.value + increment
+        val newPoints = (points.value ?: 0) + increment
         saveDataInBazaar(context, lifecycleOwner, newPoints.toString())
         points.value = newPoints
     }
 
     fun subtractPoints(context: Context, lifecycleOwner: LifecycleOwner, decrement: Int) {
-        val newPoints = points.value - decrement
+        val currentPoints = points.value ?: 0
+        val newPoints = currentPoints - decrement
         if (newPoints >= 0) {
             saveDataInBazaar(context, lifecycleOwner, newPoints.toString())
             points.value = newPoints
