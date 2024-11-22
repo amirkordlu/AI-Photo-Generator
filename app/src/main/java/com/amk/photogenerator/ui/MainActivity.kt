@@ -15,6 +15,7 @@ import com.amk.photogenerator.di.myModules
 import com.amk.photogenerator.ui.features.loginScreen.LoginScreen
 import com.amk.photogenerator.ui.features.loginScreen.OtpScreen
 import com.amk.photogenerator.ui.features.mainScreen.MainScreen
+import com.amk.photogenerator.ui.features.shopScreen.ShopScreen
 import com.amk.photogenerator.ui.features.signupScreen.SignUpScreen
 import com.amk.photogenerator.ui.theme.PhotoGeneratorTheme
 import com.amk.photogenerator.util.MyScreens
@@ -67,6 +68,9 @@ fun PhotoGeneratorUI() {
             SignUpScreen()
         }
 
+        composable(MyScreens.ShopScreen.route) {
+            ShopScreen()
+        }
 
     }
 }

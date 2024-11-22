@@ -1,9 +1,7 @@
 package com.amk.photogenerator.ui.features.loginScreen
 
 import android.app.Activity
-import android.util.Log
 import android.widget.Toast
-import androidx.activity.compose.LocalActivityResultRegistryOwner
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
@@ -45,10 +43,11 @@ import com.airbnb.lottie.compose.rememberLottieComposition
 import com.amk.photogenerator.R
 import com.amk.photogenerator.ui.theme.PhotoGeneratorTheme
 import com.amk.photogenerator.ui.theme.Typography
-import com.amk.photogenerator.util.RSA_KEY
+import com.amk.photogenerator.util.MyScreens
 import com.farsitel.bazaar.core.BazaarSignIn
 import com.farsitel.bazaar.core.model.BazaarSignInOptions
 import com.farsitel.bazaar.core.model.SignInOption
+import dev.burnoo.cokoin.navigation.getNavController
 
 @Preview(showBackground = true)
 @Composable
@@ -64,116 +63,71 @@ fun LoginScreenPreview() {
 
 @Composable
 fun LoginScreen() {
+
+    val navigation = getNavController()
+
     val context = LocalContext.current
     val lifecycleOwner: LifecycleOwner = LocalLifecycleOwner.current
-    val activityResultRegistry = LocalActivityResultRegistryOwner.current!!.activityResultRegistry
 
     val viewModel: AccountViewModel = viewModel()
-    val paymentViewModel: PaymentViewModel = viewModel()
 
     LaunchedEffect(Unit) {
-        paymentViewModel.initSecurityCheck(RSA_KEY)
-        paymentViewModel.initPaymentConfiguration()
-        paymentViewModel.initPayment(context)
-        paymentViewModel.connectToBazaar(
-            onSuccess = {
-                Log.v("LoginScreen", "Connected to Bazaar")
-            },
-            onFailure = { throwable ->
-                Log.v("LoginScreen", "Failed to connect: ${throwable.message}")
-            },
-            onDisconnected = {
-                Log.v("LoginScreen", "Disconnected from Bazaar")
-            }
-        )
-        // Get login and points
+        // Get login
         viewModel.getBazaarLogin(context, lifecycleOwner)
-        viewModel.loadPointsFromBazaar(context, lifecycleOwner)
     }
 
-
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState()),
-        verticalArrangement = Arrangement.Bottom,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        MainAnimation()
-
-        Button(onClick = {
-            if (viewModel.points.value != null && viewModel.hasLogin.value) {
-                paymentViewModel.startPurchase(
-                    "10point",
-                    "purchasePayload",
-                    activityResultRegistry,
-                    onFailure = { Toast.makeText(context, "ناموفق", Toast.LENGTH_SHORT).show() },
-                    onSuccess = { purchaseEntity ->
-                        viewModel.addPoints(context, lifecycleOwner, 10)
-                        paymentViewModel.consumePurchase(purchaseEntity.purchaseToken, {
-                            Toast.makeText(
-                                context,
-                                "خرید موفق" + purchaseEntity.purchaseToken,
-                                Toast.LENGTH_SHORT
-                            ).show()
-                        }, {})
-                    })
-            } else {
-                Toast.makeText(
-                    context,
-                    "لطفا ابتدا وارد حساب کاربری خود شوید",
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
-        }) {
-            Text("خرید")
-        }
-
-        val bazaarSignInLauncher = rememberLauncherForActivityResult(
-            contract = ActivityResultContracts.StartActivityForResult()
-        ) { result ->
-            if (result.resultCode == Activity.RESULT_OK) {
-                viewModel.handleSignInResult(result.data)
+    if (viewModel.hasLogin.value) {
+        navigation.navigate(MyScreens.ShopScreen.route) {
+            popUpTo(MyScreens.ShopScreen.route) {
+                inclusive = true
             }
         }
+    } else {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState()),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
 
-        BazaarButton {
-            if (!viewModel.hasLogin.value) {
-                val signInOption = BazaarSignInOptions.Builder(SignInOption.DEFAULT_SIGN_IN).build()
-                val client = BazaarSignIn.getClient(context, signInOption)
-                val intent = client.getSignInIntent()
+            MainAnimation()
 
-                bazaarSignInLauncher.launch(intent)
-            } else {
-                Toast.makeText(context, "شما قبلاً وارد شده‌اید", Toast.LENGTH_SHORT).show()
+
+            val bazaarSignInLauncher = rememberLauncherForActivityResult(
+                contract = ActivityResultContracts.StartActivityForResult()
+            ) { result ->
+                if (result.resultCode == Activity.RESULT_OK) {
+                    viewModel.handleSignInResult(result.data)
+                }
             }
 
-        }
+            BazaarButton {
+                if (!viewModel.hasLogin.value) {
+                    val signInOption =
+                        BazaarSignInOptions.Builder(SignInOption.DEFAULT_SIGN_IN).build()
+                    val client = BazaarSignIn.getClient(context, signInOption)
+                    val intent = client.getSignInIntent()
 
-        Text(
-            text = when (val currentPoints = viewModel.points.value) {
-                null -> "در حال بارگذاری..."
-                else -> "امتیاز فعلی: $currentPoints"
-            },
-            style = Typography.bodyMedium,
-            modifier = Modifier.padding(top = 8.dp)
-        )
+                    bazaarSignInLauncher.launch(intent)
+                } else {
+                    Toast.makeText(context, "شما قبلاً وارد شده‌اید", Toast.LENGTH_SHORT).show()
+                }
 
-        if (viewModel.hasLogin.value) {
-            LaunchedEffect(viewModel.hasLogin.value) {
-                viewModel.loadPointsFromBazaar(context, lifecycleOwner)
             }
+
+            if (viewModel.hasLogin.value) {
+                LaunchedEffect(viewModel.hasLogin.value) {
+                    navigation.navigate(MyScreens.ShopScreen.route) {
+                        popUpTo(MyScreens.LoginScreen.route) {
+                            inclusive = true
+                        }
+                    }
+                }
+            }
+
+            LoginWithAccounts()
         }
-
-        PointsSection(addPointClicked = {
-            viewModel.addPoints(context, lifecycleOwner, 10)
-        },
-            subtractPointClicked = {
-                viewModel.subtractPoints(context, lifecycleOwner, 2)
-            })
-
-        LoginWithAccounts()
-
     }
 }
 
@@ -201,42 +155,18 @@ fun BazaarButton(signInClicked: () -> Unit) {
 }
 
 @Composable
-fun PointsSection(addPointClicked: () -> Unit, subtractPointClicked: () -> Unit) {
-    Column(modifier = Modifier.padding(bottom = 32.dp)) {
-        Button(
-            modifier = Modifier
-                .fillMaxWidth(0.75f)
-                .padding(top = 8.dp, bottom = 16.dp)
-                .height(56.dp),
-            onClick = { addPointClicked.invoke() },
-            shape = RoundedCornerShape(36.dp),
-            colors = ButtonDefaults.buttonColors(Color(0xFF7853A1))
-        ) {
-            Text(
-                text = "اضافه کردن سکه",
-                style = Typography.bodyMedium,
-                color = Color.White
-            )
+fun MainAnimation() {
+    val composition by rememberLottieComposition(
+        LottieCompositionSpec.RawRes(R.raw.signup_animation)
+    )
 
-        }
-
-        Button(
-            modifier = Modifier
-                .fillMaxWidth(0.75f)
-                .padding(top = 8.dp, bottom = 16.dp)
-                .height(56.dp),
-            onClick = { subtractPointClicked.invoke() },
-            shape = RoundedCornerShape(36.dp),
-            colors = ButtonDefaults.buttonColors(Color(0xFFFAF6FF))
-        ) {
-            Text(
-                text = "کاهش سکه",
-                style = Typography.bodyMedium,
-                color = Color(0xFF7853A1)
-            )
-
-        }
-    }
+    LottieAnimation(
+        modifier = Modifier
+            .size(270.dp)
+            .padding(top = 16.dp, bottom = 36.dp),
+        composition = composition,
+        iterations = LottieConstants.IterateForever
+    )
 }
 
 @Composable
@@ -283,19 +213,3 @@ fun LoginWithAccounts() {
 
     }
 }
-
-@Composable
-fun MainAnimation() {
-    val composition by rememberLottieComposition(
-        LottieCompositionSpec.RawRes(R.raw.signup_animation)
-    )
-
-    LottieAnimation(
-        modifier = Modifier
-            .size(270.dp)
-            .padding(top = 16.dp, bottom = 36.dp),
-        composition = composition,
-        iterations = LottieConstants.IterateForever
-    )
-}
-

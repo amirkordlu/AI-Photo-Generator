@@ -55,11 +55,15 @@ fun MainScreen() {
         verticalArrangement = Arrangement.SpaceBetween
     ) {
         MainToolbar {
-            navigation.navigate(MyScreens.LoginScreen.route)
+            navigation.navigate(MyScreens.LoginScreen.route) {
+                popUpTo(MyScreens.MainScreen.route) {
+                    inclusive = false
+                }
+            }
         }
     }
-
 }
+
 
 @Composable
 fun MainToolbar(onProfileClicked: () -> Unit) {

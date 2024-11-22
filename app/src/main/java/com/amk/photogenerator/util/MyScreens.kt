@@ -5,5 +5,6 @@ sealed class MyScreens(val route: String) {
     object LoginScreen : MyScreens("loginScreen")
     object OTPScreen : MyScreens("otpScreen")
     object SignUpScreen : MyScreens("signUpScreen")
+    object ShopScreen : MyScreens("shopScreen")
 
 }
