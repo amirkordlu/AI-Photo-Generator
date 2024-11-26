@@ -27,6 +27,7 @@ import com.amk.photogenerator.ui.features.loginScreen.AccountViewModel
 import com.amk.photogenerator.ui.features.loginScreen.PaymentViewModel
 import com.amk.photogenerator.ui.theme.PhotoGeneratorTheme
 import com.amk.photogenerator.ui.theme.Typography
+import com.amk.photogenerator.util.FirstRunPreferences
 import com.amk.photogenerator.util.MyScreens
 import com.amk.photogenerator.util.RSA_KEY
 import dev.burnoo.cokoin.navigation.getNavController
@@ -60,6 +61,7 @@ fun ShopScreen() {
 
     val viewModel: AccountViewModel = viewModel()
     val paymentViewModel: PaymentViewModel = viewModel()
+    val isFirstRun: Boolean = FirstRunPreferences.isFirstRun(context)
 
     LaunchedEffect(Unit) {
         paymentViewModel.initSecurityCheck(RSA_KEY)
@@ -274,7 +276,18 @@ fun ShopScreen() {
         Text(
             text = when (val currentPoints = viewModel.points.value) {
                 null -> "در حال بارگذاری..."
-                else -> "امتیاز فعلی: $currentPoints"
+                else -> {
+                    if (isFirstRun) {
+                        Toast.makeText(
+                            context,
+                            "به مناسبت ورودت به نگاره ۳ تا سکه مهمون ما باش :)",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        FirstRunPreferences.setFirstRunCompleted(context)
+                        viewModel.addPoints(context, lifecycleOwner, 3)
+                    }
+                    "امتیاز فعلی: $currentPoints"
+                }
             },
             style = Typography.bodyMedium,
             modifier = Modifier.padding(top = 8.dp)
