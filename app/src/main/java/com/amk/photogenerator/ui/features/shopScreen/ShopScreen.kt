@@ -7,24 +7,32 @@ import androidx.activity.compose.LocalActivityResultRegistryOwner
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.amk.photogenerator.R
 import com.amk.photogenerator.ui.features.loginScreen.AccountViewModel
-import com.amk.photogenerator.ui.features.loginScreen.PaymentViewModel
 import com.amk.photogenerator.ui.theme.PhotoGeneratorTheme
 import com.amk.photogenerator.ui.theme.Typography
 import com.amk.photogenerator.util.FirstRunPreferences
@@ -92,7 +100,7 @@ fun ShopScreen() {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
-        Button(onClick = {
+        BuyPointButton("خرید 10 امتیاز") {
             if (viewModel.points.value != null && viewModel.hasLogin.value) {
                 paymentViewModel.startPurchase(
                     "10point",
@@ -118,11 +126,9 @@ fun ShopScreen() {
                     Toast.LENGTH_SHORT
                 ).show()
             }
-        }) {
-            Text("خرید 10 امتیاز")
         }
 
-        Button(onClick = {
+        BuyPointButton("خرید 30 امتیاز") {
             if (viewModel.points.value != null && viewModel.hasLogin.value) {
                 paymentViewModel.startPurchase(
                     "30point",
@@ -148,11 +154,9 @@ fun ShopScreen() {
                     Toast.LENGTH_SHORT
                 ).show()
             }
-        }) {
-            Text("خرید 30 امتیاز")
         }
 
-        Button(onClick = {
+        BuyPointButton("خرید 60 امتیاز") {
             if (viewModel.points.value != null && viewModel.hasLogin.value) {
                 paymentViewModel.startPurchase(
                     "60point",
@@ -178,11 +182,9 @@ fun ShopScreen() {
                     Toast.LENGTH_SHORT
                 ).show()
             }
-        }) {
-            Text("خرید 60 امتیاز")
         }
 
-        Button(onClick = {
+        BuyPointButton("خرید 150 امتیاز") {
             if (viewModel.points.value != null && viewModel.hasLogin.value) {
                 paymentViewModel.startPurchase(
                     "150point",
@@ -208,11 +210,9 @@ fun ShopScreen() {
                     Toast.LENGTH_SHORT
                 ).show()
             }
-        }) {
-            Text("خرید 150 امتیاز")
         }
 
-        Button(onClick = {
+        BuyPointButton("خرید 300 امتیاز") {
             if (viewModel.points.value != null && viewModel.hasLogin.value) {
                 paymentViewModel.startPurchase(
                     "300point",
@@ -238,11 +238,9 @@ fun ShopScreen() {
                     Toast.LENGTH_SHORT
                 ).show()
             }
-        }) {
-            Text("خرید 300 امتیاز")
         }
 
-        Button(onClick = {
+        BuyPointButton("خرید 500 امتیاز") {
             if (viewModel.points.value != null && viewModel.hasLogin.value) {
                 paymentViewModel.startPurchase(
                     "500point",
@@ -268,10 +266,7 @@ fun ShopScreen() {
                     Toast.LENGTH_SHORT
                 ).show()
             }
-        }) {
-            Text("خرید 500 امتیاز")
         }
-
 
         Text(
             text = when (val currentPoints = viewModel.points.value) {
@@ -294,6 +289,28 @@ fun ShopScreen() {
         )
 
     }
+}
+
+@Composable
+fun BuyPointButton(buttonText: String, onClick: () -> Unit) {
+    Button(
+        modifier = Modifier
+            .fillMaxWidth(0.75f)
+            .padding(top = 8.dp, bottom = 16.dp)
+            .height(56.dp),
+        onClick = { onClick.invoke() },
+        shape = RoundedCornerShape(36.dp),
+        colors = ButtonDefaults.buttonColors(Color(0xFF0EA960))
+    ) {
+
+        Text(
+            text = buttonText,
+            style = Typography.bodyMedium,
+            color = Color.White
+        )
+
+    }
+
 }
 
 

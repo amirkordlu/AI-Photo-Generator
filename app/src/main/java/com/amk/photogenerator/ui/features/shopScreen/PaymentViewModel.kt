@@ -1,4 +1,4 @@
-package com.amk.photogenerator.ui.features.loginScreen
+package com.amk.photogenerator.ui.features.shopScreen
 
 import android.content.Context
 import androidx.activity.result.ActivityResultRegistry

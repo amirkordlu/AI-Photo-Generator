@@ -1,6 +1,5 @@
 package com.amk.photogenerator.util
 
-import android.content.Context
 import android.util.Log
 import kotlinx.coroutines.CoroutineExceptionHandler
 import java.util.Calendar

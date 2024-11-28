@@ -79,14 +79,19 @@ class AccountViewModel(
         points.value = newPoints
     }
 
-    fun subtractPoints(context: Context, lifecycleOwner: LifecycleOwner, decrement: Int) {
+    fun subtractPoints(
+        context: Context,
+        lifecycleOwner: LifecycleOwner,
+        decrement: Int,
+        onError: (String) -> Unit
+    ) {
         val currentPoints = points.value ?: 0
         val newPoints = currentPoints - decrement
         if (newPoints >= 0) {
             saveDataInBazaar(context, lifecycleOwner, newPoints.toString())
             points.value = newPoints
         } else {
-            Log.v("AccountViewModel", "امتیاز ناکافی")
+            onError.invoke("Current point is 0")
         }
     }
 
