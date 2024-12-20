@@ -91,7 +91,7 @@ fun LoginScreen() {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
-            MainAnimation()
+            LoginAnimation()
 
 
             val bazaarSignInLauncher = rememberLauncherForActivityResult(
@@ -155,7 +155,7 @@ fun BazaarButton(signInClicked: () -> Unit) {
 }
 
 @Composable
-fun MainAnimation() {
+fun LoginAnimation() {
     val composition by rememberLottieComposition(
         LottieCompositionSpec.RawRes(R.raw.signup_animation)
     )

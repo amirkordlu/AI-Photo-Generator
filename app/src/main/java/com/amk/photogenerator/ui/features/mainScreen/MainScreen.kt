@@ -1,16 +1,22 @@
 package com.amk.photogenerator.ui.features.mainScreen
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ElevatedCard
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -50,9 +56,7 @@ fun MainScreen() {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .verticalScroll(rememberScrollState()),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.SpaceBetween
+            .verticalScroll(rememberScrollState())
     ) {
         MainToolbar {
             navigation.navigate(MyScreens.LoginScreen.route) {
@@ -61,17 +65,27 @@ fun MainScreen() {
                 }
             }
         }
+
+        MainCard(
+            Modifier
+                .align(Alignment.CenterHorizontally)
+                .offset(y = (-60).dp)
+        ) {
+            navigation.navigate(MyScreens.PhotoGeneratorScreen.route)
+        }
+
     }
+
 }
 
 
 @Composable
 fun MainToolbar(onProfileClicked: () -> Unit) {
 
-    Box(modifier = Modifier.fillMaxSize()) {
+    Box(modifier = Modifier.fillMaxWidth()) {
         Image(
             modifier = Modifier
-                .fillMaxSize()
+                .fillMaxWidth()
                 .clip(RoundedCornerShape(0.dp)),
             painter = painterResource(R.drawable.main_rectangle),
             contentScale = ContentScale.FillBounds,
@@ -116,5 +130,38 @@ fun MainToolbar(onProfileClicked: () -> Unit) {
 
         }
 
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun MainCard(modifier: Modifier = Modifier, onCardClicked: () -> Unit) {
+    ElevatedCard(
+        elevation = CardDefaults.cardElevation(
+            defaultElevation = 6.dp
+        ),
+        modifier = modifier
+            .fillMaxWidth()
+            .height(200.dp)
+            .padding(horizontal = 20.dp),
+        onClick = { onCardClicked.invoke() }
+    ) {
+        Box(modifier = Modifier.fillMaxSize()) {
+            Image(
+                painter = painterResource(R.drawable.main_rectangle),
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier.fillMaxSize()
+            )
+            Text(
+                text = "ساخت عکس",
+                style = Typography.bodyLarge,
+                color = Color.White,
+                modifier = Modifier
+                    .align(Alignment.Center)
+                    .padding(16.dp)
+                    .background(Color.Black.copy(alpha = 0.6f))
+            )
+        }
     }
 }

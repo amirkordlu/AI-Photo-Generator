@@ -12,8 +12,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.amk.photogenerator.di.myModules
+import com.amk.photogenerator.ui.features.loadingScreen.LoadingScreen
 import com.amk.photogenerator.ui.features.loginScreen.LoginScreen
 import com.amk.photogenerator.ui.features.mainScreen.MainScreen
+import com.amk.photogenerator.ui.features.photoGeneratorScreen.PhotoGeneratorScreen
+import com.amk.photogenerator.ui.features.resultScreen.PhotoResultScreen
 import com.amk.photogenerator.ui.features.shopScreen.ShopScreen
 import com.amk.photogenerator.ui.theme.PhotoGeneratorTheme
 import com.amk.photogenerator.util.MyScreens
@@ -60,6 +63,18 @@ fun PhotoGeneratorUI() {
 
         composable(MyScreens.ShopScreen.route) {
             ShopScreen()
+        }
+
+        composable(MyScreens.PhotoGeneratorScreen.route) {
+            PhotoGeneratorScreen()
+        }
+
+        composable(MyScreens.LoadingScreen.route) {
+            LoadingScreen()
+        }
+
+        composable(MyScreens.PhotoResultScreen.route) {
+            PhotoResultScreen()
         }
 
     }
