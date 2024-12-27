@@ -1,16 +1,19 @@
 package com.amk.photogenerator.ui.features.mainScreen
 
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -26,6 +29,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -33,6 +37,9 @@ import androidx.compose.ui.unit.sp
 import com.amk.photogenerator.R
 import com.amk.photogenerator.ui.theme.PhotoGeneratorTheme
 import com.amk.photogenerator.ui.theme.Typography
+import com.amk.photogenerator.ui.theme.bodyLargeCard
+import com.amk.photogenerator.ui.theme.bodyMediumCard
+import com.amk.photogenerator.ui.theme.bodySmallCard
 import com.amk.photogenerator.util.MyScreens
 import com.amk.photogenerator.util.getCurrentTime
 import dev.burnoo.cokoin.navigation.getNavController
@@ -52,6 +59,7 @@ fun MainScreenPreview() {
 @Composable
 fun MainScreen() {
     val navigation = getNavController()
+    val context = LocalContext.current
 
     Column(
         modifier = Modifier
@@ -69,10 +77,50 @@ fun MainScreen() {
         MainCard(
             Modifier
                 .align(Alignment.CenterHorizontally)
-                .offset(y = (-60).dp)
-        ) {
-            navigation.navigate(MyScreens.PhotoGeneratorScreen.route)
-        }
+                .offset(y = (-110).dp), {
+                navigation.navigate(MyScreens.PhotoGeneratorScreen.route)
+            }, R.drawable.img_card_create, "متن به عکس", "!الان بساز", false
+        )
+
+        Spacer(modifier = Modifier.padding(vertical = 10.dp))
+
+        MainCard(
+            Modifier
+                .align(Alignment.CenterHorizontally)
+                .offset(y = (-110).dp),
+            {
+                Toast.makeText(context, "به‌زودی این سرویس به نگاره اضافه میشه", Toast.LENGTH_SHORT)
+                    .show()
+            },
+            R.drawable.img_card_ocr,
+            "عکس به متن", "!الان بساز", true
+        )
+
+        Spacer(modifier = Modifier.padding(vertical = 10.dp))
+
+        MainCard(
+            Modifier
+                .align(Alignment.CenterHorizontally)
+                .offset(y = (-110).dp), {
+                Toast.makeText(context, "به‌زودی این سرویس به نگاره اضافه میشه", Toast.LENGTH_SHORT)
+                    .show()
+            },
+            R.drawable.img_card_enhance,
+            "بهبود تصویر", "!الان بساز", true
+        )
+
+        Spacer(modifier = Modifier.padding(vertical = 10.dp))
+
+        MainCard(
+            Modifier
+                .align(Alignment.CenterHorizontally)
+                .offset(y = (-110).dp), {
+                Toast.makeText(context, "به‌زودی این سرویس به نگاره اضافه میشه", Toast.LENGTH_SHORT)
+                    .show()
+            },
+            R.drawable.img_card_change,
+            "تغییر چهره", "!الان بساز", true
+        )
 
     }
 
@@ -135,7 +183,14 @@ fun MainToolbar(onProfileClicked: () -> Unit) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainCard(modifier: Modifier = Modifier, onCardClicked: () -> Unit) {
+fun MainCard(
+    modifier: Modifier = Modifier,
+    onCardClicked: () -> Unit,
+    cardImage: Int,
+    mainTextCard: String,
+    secondaryTextCard: String,
+    isSoon: Boolean
+) {
     ElevatedCard(
         elevation = CardDefaults.cardElevation(
             defaultElevation = 6.dp
@@ -147,21 +202,52 @@ fun MainCard(modifier: Modifier = Modifier, onCardClicked: () -> Unit) {
         onClick = { onCardClicked.invoke() }
     ) {
         Box(modifier = Modifier.fillMaxSize()) {
+
             Image(
-                painter = painterResource(R.drawable.main_rectangle),
+                painter = painterResource(cardImage),
                 contentDescription = null,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier.fillMaxSize()
             )
-            Text(
-                text = "ساخت عکس",
-                style = Typography.bodyLarge,
-                color = Color.White,
+
+            Column(
                 modifier = Modifier
-                    .align(Alignment.Center)
-                    .padding(16.dp)
-                    .background(Color.Black.copy(alpha = 0.6f))
-            )
+                    .fillMaxSize()
+                    .padding(end = 20.dp),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.End,
+            ) {
+
+                Text(
+                    text = mainTextCard,
+                    style = bodyLargeCard
+                )
+
+                Spacer(modifier = Modifier.padding(vertical = 6.dp))
+
+                Text(
+                    text = secondaryTextCard,
+                    style = bodyMediumCard
+                )
+            }
+
+            if (isSoon) {
+                Box(
+                    modifier =
+                    Modifier
+                        .background(
+                            color = Color(0xFFEF5350),
+                            shape = RoundedCornerShape(size = 6.dp)
+                        )
+                        .padding(start = 8.dp, top = 3.dp, end = 8.dp, bottom = 4.dp)
+                ) {
+                    Text(
+                        "به‌زودی",
+                        style = bodySmallCard
+                    )
+
+                }
+            }
         }
     }
 }

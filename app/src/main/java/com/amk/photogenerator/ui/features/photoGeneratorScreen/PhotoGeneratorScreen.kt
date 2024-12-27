@@ -5,7 +5,6 @@ import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -16,18 +15,16 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.ImeAction
@@ -36,13 +33,7 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import coil3.compose.AsyncImage
-import com.airbnb.lottie.compose.LottieAnimation
-import com.airbnb.lottie.compose.LottieCompositionSpec
-import com.airbnb.lottie.compose.LottieConstants
-import com.airbnb.lottie.compose.rememberLottieComposition
 import com.amk.photogenerator.R
-import com.amk.photogenerator.model.data.PhotoGeneratorDallEResponse
 import com.amk.photogenerator.ui.theme.PhotoGeneratorTheme
 import com.amk.photogenerator.ui.theme.Typography
 import com.amk.photogenerator.ui.theme.textFieldStyle
@@ -74,7 +65,7 @@ fun PhotoGeneratorScreen() {
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        val promt = mainTextField("چی بسازم برات؟")
+        val promt = mainTextField("توصیف کن چی بسازم برات؟")
 
         Spacer(modifier = Modifier.padding(vertical = 8.dp))
 
@@ -136,6 +127,10 @@ fun GenerateButton(buttonText: String, onClick: () -> Unit) {
         shape = RoundedCornerShape(36.dp),
         colors = ButtonDefaults.buttonColors(Color(0xFF0EA960))
     ) {
+
+        Icon(painterResource(R.drawable.ic_majic), null, modifier = Modifier.size(24.dp))
+
+        Spacer(modifier = Modifier.padding(end = 8.dp))
 
         Text(
             text = buttonText,
