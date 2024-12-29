@@ -79,7 +79,7 @@ fun MainScreen() {
                 .align(Alignment.CenterHorizontally)
                 .offset(y = (-110).dp), {
                 navigation.navigate(MyScreens.PhotoGeneratorScreen.route)
-            }, R.drawable.img_card_create, "متن به عکس", "!الان بساز", false
+            }, R.drawable.img_card_create, "متن به عکس", "!تصویرش کن", false
         )
 
         Spacer(modifier = Modifier.padding(vertical = 10.dp))
@@ -93,7 +93,7 @@ fun MainScreen() {
                     .show()
             },
             R.drawable.img_card_ocr,
-            "عکس به متن", "!الان بساز", true
+            "عکس به متن", "!تبدیلش کن", true
         )
 
         Spacer(modifier = Modifier.padding(vertical = 10.dp))
@@ -106,7 +106,7 @@ fun MainScreen() {
                     .show()
             },
             R.drawable.img_card_enhance,
-            "بهبود تصویر", "!الان بساز", true
+            "بهبود تصویر", "!تقویتش کن", true
         )
 
         Spacer(modifier = Modifier.padding(vertical = 10.dp))
@@ -119,7 +119,7 @@ fun MainScreen() {
                     .show()
             },
             R.drawable.img_card_change,
-            "تغییر چهره", "!الان بساز", true
+            "تغییر چهره", "!تعویضش کن", true
         )
 
     }

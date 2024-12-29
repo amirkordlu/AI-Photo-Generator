@@ -1,7 +1,9 @@
 package com.amk.photogenerator.ui.features.loadingScreen
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -10,10 +12,15 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.LottieConstants
@@ -21,6 +28,7 @@ import com.airbnb.lottie.compose.rememberLottieComposition
 import com.amk.photogenerator.R
 import com.amk.photogenerator.ui.features.photoGeneratorScreen.PhotoGeneratorViewModel
 import com.amk.photogenerator.ui.theme.PhotoGeneratorTheme
+import com.amk.photogenerator.ui.theme.Typography
 import com.amk.photogenerator.util.MyScreens
 import dev.burnoo.cokoin.navigation.getNavController
 import dev.burnoo.cokoin.navigation.getNavViewModel
@@ -54,10 +62,27 @@ fun LoadingScreen() {
         modifier = Modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
+            .padding(horizontal = 16.dp),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
         PhotoGeneratorAnimation()
 
-        Text("ممکنه یکم طول بکشه!")
+        CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
+
+            Text("نگاره در حال ساخت عکس شماست...", style = Typography.bodyLarge)
+
+
+            Spacer(modifier = Modifier.padding(vertical = 12.dp))
+
+            Text(
+                modifier = Modifier.padding(bottom = 22.dp),
+                text = "سرورهای نگاره مستقیما به Dall-E3 متصل میشه و عکس نهایی همون عکس ساخته شده با ChatGPT-4o هست",
+                style = Typography.bodyMedium,
+                lineHeight = 28.sp
+            )
+
+        }
     }
 
     if (!viewmodel.loading.value) {
@@ -65,7 +90,6 @@ fun LoadingScreen() {
     }
 
 }
-
 
 @Composable
 fun PhotoGeneratorAnimation() {
@@ -75,8 +99,8 @@ fun PhotoGeneratorAnimation() {
 
     LottieAnimation(
         modifier = Modifier
-            .size(270.dp)
-            .padding(top = 16.dp, bottom = 36.dp),
+            .size(290.dp)
+            .padding(top = 12.dp, bottom = 36.dp),
         composition = composition,
         iterations = LottieConstants.IterateForever
     )
