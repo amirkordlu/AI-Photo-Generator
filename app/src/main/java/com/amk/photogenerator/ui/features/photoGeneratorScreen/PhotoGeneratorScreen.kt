@@ -52,8 +52,6 @@ import com.amk.photogenerator.ui.theme.PhotoGeneratorTheme
 import com.amk.photogenerator.ui.theme.Typography
 import com.amk.photogenerator.ui.theme.bodySmallCard
 import com.amk.photogenerator.ui.theme.textFieldStyle
-import com.amk.photogenerator.util.FirstRunPreferences
-import com.amk.photogenerator.util.FirstRunPreferences.isFirstRun
 import com.amk.photogenerator.util.MyScreens
 import dev.burnoo.cokoin.navigation.getNavController
 import dev.burnoo.cokoin.navigation.getNavViewModel
@@ -78,7 +76,6 @@ fun PhotoGeneratorScreen() {
     val viewModel = getNavViewModel<PhotoGeneratorViewModel>()
     val accountViewModel: AccountViewModel = viewModel()
     val navigation = getNavController()
-    val isFirstRun: Boolean = isFirstRun(context)
 
     accountViewModel.getBazaarLogin(context, lifecycleOwner)
     accountViewModel.loadPointsFromBazaar(context, lifecycleOwner)
@@ -120,15 +117,6 @@ fun PhotoGeneratorScreen() {
                 text = when (val currentPoints = accountViewModel.points.value) {
                     null -> "..."
                     else -> {
-                        if (isFirstRun) {
-                            Toast.makeText(
-                                context,
-                                "به مناسبت ورودت به نگاره ۳ تا سکه مهمون ما باش :)",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                            FirstRunPreferences.setFirstRunCompleted(context)
-                            accountViewModel.addPoints(context, lifecycleOwner, 3)
-                        }
                         currentPoints.toString()
                     }
                 }, style = Typography.bodyMedium,

@@ -24,6 +24,8 @@ class AccountViewModel(
     val savedData = mutableStateOf("")
     val points = mutableStateOf<Int?>(null)
 
+    val isLoading = mutableStateOf(true)
+
     fun handleSignInResult(intent: Intent?) {
         val account = intent?.let { BazaarSignIn.getSignedInAccountFromIntent(it) }
         if (account != null && account.accountId.isNotEmpty()) {
@@ -61,6 +63,7 @@ class AccountViewModel(
     }
 
     fun loadPointsFromBazaar(context: Context, lifecycleOwner: LifecycleOwner) {
+        isLoading.value = true
         viewModelScope.launch(coroutineExceptionHandler) {
             BazaarStorage.getSavedData(
                 context,
@@ -68,6 +71,7 @@ class AccountViewModel(
                 callback = BazaarStorageCallback { response ->
                     val currentPoints = response?.data?.toReadableString()?.toIntOrNull()
                     points.value = currentPoints
+                    isLoading.value = false
                 }
             )
         }

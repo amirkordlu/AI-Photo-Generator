@@ -10,13 +10,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -26,16 +24,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.amk.photogenerator.R
 import com.amk.photogenerator.ui.features.loginScreen.AccountViewModel
 import com.amk.photogenerator.ui.theme.PhotoGeneratorTheme
 import com.amk.photogenerator.ui.theme.Typography
-import com.amk.photogenerator.util.FirstRunPreferences
 import com.amk.photogenerator.util.MyScreens
 import com.amk.photogenerator.util.RSA_KEY
 import dev.burnoo.cokoin.navigation.getNavController
@@ -69,7 +64,6 @@ fun ShopScreen() {
 
     val viewModel: AccountViewModel = viewModel()
     val paymentViewModel: PaymentViewModel = viewModel()
-    val isFirstRun: Boolean = FirstRunPreferences.isFirstRun(context)
 
     LaunchedEffect(Unit) {
         paymentViewModel.initSecurityCheck(RSA_KEY)
@@ -269,18 +263,21 @@ fun ShopScreen() {
         }
 
         Text(
-            text = when (val currentPoints = viewModel.points.value) {
-                null -> "در حال بارگذاری..."
+            text = when {
+                viewModel.isLoading.value -> {
+                    "در حال بارگذاری..."
+                }
+                viewModel.points.value == null -> {
+                    viewModel.addPoints(context, lifecycleOwner, 2)
+                    Toast.makeText(
+                        context,
+                        "به مناسبت ورود به نگاره 2 تا سکه مهمون ما باش :)",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    "2 امتیاز گرفتی"
+                }
                 else -> {
-                    if (isFirstRun) {
-                        Toast.makeText(
-                            context,
-                            "به مناسبت ورودت به نگاره ۳ تا سکه مهمون ما باش :)",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                        FirstRunPreferences.setFirstRunCompleted(context)
-                        viewModel.addPoints(context, lifecycleOwner, 3)
-                    }
+                    val currentPoints = viewModel.points.value
                     "امتیاز فعلی: $currentPoints"
                 }
             },
