@@ -77,7 +77,7 @@ fun LoadingScreen() {
 
             Text(
                 modifier = Modifier.padding(bottom = 22.dp),
-                text = "سرورهای نگاره مستقیما به Dall-E3 متصل میشه و عکس نهایی همون عکس ساخته شده با ChatGPT-4o هست",
+                text = "سرورهای نگاره مستقیما به ChatGPT متصل میشه و عکس نهایی همون عکس ساخته شده با Dall-E3 هست",
                 style = Typography.bodyMedium,
                 lineHeight = 28.sp
             )

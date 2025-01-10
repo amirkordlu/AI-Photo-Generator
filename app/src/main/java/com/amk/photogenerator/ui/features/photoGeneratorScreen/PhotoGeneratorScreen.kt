@@ -28,6 +28,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -52,8 +53,11 @@ import com.amk.photogenerator.ui.theme.Typography
 import com.amk.photogenerator.ui.theme.bodySmallCard
 import com.amk.photogenerator.ui.theme.textFieldStyle
 import com.amk.photogenerator.util.MyScreens
+import com.amk.photogenerator.util.NetworkChecker
+import com.amk.photogenerator.util.savePrompt
 import dev.burnoo.cokoin.navigation.getNavController
 import dev.burnoo.cokoin.navigation.getNavViewModel
+import kotlinx.coroutines.launch
 
 @Preview(showBackground = true)
 @Composable
@@ -75,6 +79,7 @@ fun PhotoGeneratorScreen() {
     val viewModel = getNavViewModel<PhotoGeneratorViewModel>()
     val accountViewModel: AccountViewModel = viewModel()
     val navigation = getNavController()
+    val scope = rememberCoroutineScope()
 
     accountViewModel.getBazaarLogin(context, lifecycleOwner)
     accountViewModel.loadPointsFromBazaar(context, lifecycleOwner)
@@ -158,8 +163,15 @@ fun PhotoGeneratorScreen() {
                 } else if (accountViewModel.points.value == null) {
                     Toast.makeText(context, "بذار اول امتیازهات بارگذاری بشه", Toast.LENGTH_SHORT)
                         .show()
+                } else if (!NetworkChecker(context).isInternetConnected) {
+                    Toast.makeText(context, "اینترنت نداری :(", Toast.LENGTH_SHORT).show()
                 } else {
-                    viewModel.photoGenerator(promt)
+                    scope.launch {
+                        savePrompt(context, promt)
+                    }
+                    viewModel.photoGenerator(promt, onError = {
+                        Toast.makeText(context, "خطا در ساخت عکس", Toast.LENGTH_SHORT).show()
+                    })
                 }
             }
 

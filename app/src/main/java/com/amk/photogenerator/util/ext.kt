@@ -5,7 +5,6 @@ import com.amk.photogenerator.model.data.PhotoGeneratorDallEResponse
 import kotlinx.coroutines.CoroutineExceptionHandler
 import java.util.Calendar
 
-
 fun getCurrentTime(): String {
     val c = Calendar.getInstance()
     val hour = c.get(Calendar.HOUR_OF_DAY)
