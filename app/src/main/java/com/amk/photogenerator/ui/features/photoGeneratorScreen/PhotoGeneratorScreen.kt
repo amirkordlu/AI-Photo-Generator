@@ -20,7 +20,6 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
@@ -93,7 +92,7 @@ fun PhotoGeneratorScreen() {
         Row(
             Modifier
                 .align(Alignment.Start)
-                .padding(start = 12.dp)
+                .padding(start = 12.dp, end = 12.dp)
                 .background(
                     color = Color(0xFF7E84F9),
                     shape = RoundedCornerShape(size = 16.dp)
@@ -114,12 +113,21 @@ fun PhotoGeneratorScreen() {
             )
 
             Text(
-                text = when (val currentPoints = accountViewModel.points.value) {
-                    null -> "..."
-                    else -> {
-                        currentPoints.toString()
+                text = when {
+                    !accountViewModel.hasLogin.value -> {
+                        "برای دیدن امتیازهات نیازه وارد حساب بازارت بشی"
                     }
-                }, style = Typography.bodyMedium,
+
+                    accountViewModel.points.value == null -> {
+                        "...در حال بارگذاری"
+                    }
+
+                    else -> {
+                        val currentPoints = accountViewModel.points.value
+                        "$currentPoints"
+                    }
+                },
+                style = Typography.bodyMedium,
                 color = Color.White,
                 fontSize = 18.sp,
                 modifier = Modifier.padding(top = 8.dp, bottom = 8.dp, end = 12.dp)
@@ -138,10 +146,20 @@ fun PhotoGeneratorScreen() {
             Spacer(modifier = Modifier.padding(vertical = 16.dp))
 
             GenerateButton("بساز") {
-                if (promt.isNotEmpty()) {
-                    viewModel.photoGenerator(promt)
+                if (promt.isEmpty()) {
+                    Toast.makeText(context, "هنوز نگفتی چی بسازم برات :(", Toast.LENGTH_SHORT)
+                        .show()
+                } else if (promt.isEmpty() && !accountViewModel.hasLogin.value) {
+                    Toast.makeText(context, "اول وارد حساب بازارت شو :)", Toast.LENGTH_SHORT)
+                        .show()
+                } else if (!accountViewModel.hasLogin.value) {
+                    Toast.makeText(context, "هنوز وارد حساب بازارت نشدی :(", Toast.LENGTH_SHORT)
+                        .show()
+                } else if (accountViewModel.points.value == null) {
+                    Toast.makeText(context, "بذار اول امتیازهات بارگذاری بشه", Toast.LENGTH_SHORT)
+                        .show()
                 } else {
-                    Toast.makeText(context, "چیزیو خالی نذار", Toast.LENGTH_SHORT).show()
+                    viewModel.photoGenerator(promt)
                 }
             }
 
@@ -161,7 +179,6 @@ fun PhotoGeneratorScreen() {
 
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun mainTextField(hint: String): String {
     var text = remember { mutableStateOf(TextFieldValue("")) }

@@ -32,6 +32,7 @@ import com.amk.photogenerator.ui.features.loginScreen.AccountViewModel
 import com.amk.photogenerator.ui.theme.PhotoGeneratorTheme
 import com.amk.photogenerator.ui.theme.Typography
 import com.amk.photogenerator.util.MyScreens
+import com.amk.photogenerator.util.NetworkChecker
 import com.amk.photogenerator.util.RSA_KEY
 import dev.burnoo.cokoin.navigation.getNavController
 
@@ -116,7 +117,7 @@ fun ShopScreen() {
             } else {
                 Toast.makeText(
                     context,
-                    "لطفا ابتدا وارد حساب کاربری خود شوید",
+                    "اول باید به اینترنت وصل باشی تا بتونی خرید کنی",
                     Toast.LENGTH_SHORT
                 ).show()
             }
@@ -144,7 +145,7 @@ fun ShopScreen() {
             } else {
                 Toast.makeText(
                     context,
-                    "لطفا ابتدا وارد حساب کاربری خود شوید",
+                    "اول باید به اینترنت وصل باشی تا بتونی خرید کنی",
                     Toast.LENGTH_SHORT
                 ).show()
             }
@@ -172,7 +173,7 @@ fun ShopScreen() {
             } else {
                 Toast.makeText(
                     context,
-                    "لطفا ابتدا وارد حساب کاربری خود شوید",
+                    "اول باید به اینترنت وصل باشی تا بتونی خرید کنی",
                     Toast.LENGTH_SHORT
                 ).show()
             }
@@ -200,7 +201,7 @@ fun ShopScreen() {
             } else {
                 Toast.makeText(
                     context,
-                    "لطفا ابتدا وارد حساب کاربری خود شوید",
+                    "اول باید به اینترنت وصل باشی تا بتونی خرید کنی",
                     Toast.LENGTH_SHORT
                 ).show()
             }
@@ -228,7 +229,7 @@ fun ShopScreen() {
             } else {
                 Toast.makeText(
                     context,
-                    "لطفا ابتدا وارد حساب کاربری خود شوید",
+                    "اول باید به اینترنت وصل باشی تا بتونی خرید کنی",
                     Toast.LENGTH_SHORT
                 ).show()
             }
@@ -256,34 +257,46 @@ fun ShopScreen() {
             } else {
                 Toast.makeText(
                     context,
-                    "لطفا ابتدا وارد حساب کاربری خود شوید",
+                    "اول باید به اینترنت وصل باشی تا بتونی خرید کنی",
                     Toast.LENGTH_SHORT
                 ).show()
             }
         }
 
-        Text(
-            text = when {
-                viewModel.isLoading.value -> {
-                    "در حال بارگذاری..."
-                }
-                viewModel.points.value == null -> {
-                    viewModel.addPoints(context, lifecycleOwner, 2)
-                    Toast.makeText(
-                        context,
-                        "به مناسبت ورود به نگاره 2 تا سکه مهمون ما باش :)",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                    "2 امتیاز گرفتی"
-                }
-                else -> {
-                    val currentPoints = viewModel.points.value
-                    "امتیاز فعلی: $currentPoints"
-                }
-            },
-            style = Typography.bodyMedium,
-            modifier = Modifier.padding(top = 8.dp)
-        )
+        if (!NetworkChecker(context).isInternetConnected) {
+            Text(
+                text = ":( اینترنت نداری",
+                style = Typography.bodyMedium,
+                modifier = Modifier.padding(top = 8.dp)
+            )
+
+        } else {
+
+            Text(
+                text = when {
+                    viewModel.isLoading.value -> {
+                        "در حال بارگذاری..."
+                    }
+
+                    viewModel.points.value == null -> {
+                        viewModel.addPoints(context, lifecycleOwner, 2)
+                        Toast.makeText(
+                            context,
+                            "به مناسبت ورود به نگاره 2 تا سکه مهمون ما باش :)",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        "2 امتیاز گرفتی"
+                    }
+
+                    else -> {
+                        val currentPoints = viewModel.points.value
+                        "امتیاز فعلی: $currentPoints"
+                    }
+                },
+                style = Typography.bodyMedium,
+                modifier = Modifier.padding(top = 8.dp)
+            )
+        }
 
     }
 }

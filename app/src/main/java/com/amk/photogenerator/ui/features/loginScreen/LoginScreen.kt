@@ -44,6 +44,7 @@ import com.amk.photogenerator.R
 import com.amk.photogenerator.ui.theme.PhotoGeneratorTheme
 import com.amk.photogenerator.ui.theme.Typography
 import com.amk.photogenerator.util.MyScreens
+import com.amk.photogenerator.util.NetworkChecker
 import com.farsitel.bazaar.core.BazaarSignIn
 import com.farsitel.bazaar.core.model.BazaarSignInOptions
 import com.farsitel.bazaar.core.model.SignInOption
@@ -70,6 +71,10 @@ fun LoginScreen() {
     val lifecycleOwner: LifecycleOwner = LocalLifecycleOwner.current
 
     val viewModel: AccountViewModel = viewModel()
+
+    if (!NetworkChecker(context).isInternetConnected) {
+        Toast.makeText(context, "اینترنت نداری :(", Toast.LENGTH_SHORT).show()
+    }
 
     LaunchedEffect(Unit) {
         // Get login
