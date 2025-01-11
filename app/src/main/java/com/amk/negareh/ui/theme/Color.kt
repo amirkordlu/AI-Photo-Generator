@@ -20,3 +20,5 @@ val GreenPositive = Color(0xFF09AC73)
 val RedNegative = Color(0xFFEF5350)
 val OrangeWarning = Color(0xFFFFB240)
 val BlueInfo = Color(0xFF29B6F6)
+
+val Purple = Color(0xFF7E84F9)
