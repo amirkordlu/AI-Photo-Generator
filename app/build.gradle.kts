@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.jetbrainsKotlinAndroid)
+    alias(libs.plugins.googleGmsGoogleServices)
 }
 
 android {
@@ -59,6 +60,7 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
     implementation(libs.androidx.runtime.livedata)
+    implementation(libs.firebase.analytics)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -101,7 +103,7 @@ dependencies {
     // Data Store
     implementation("androidx.datastore:datastore-preferences:1.1.1")
 
-    //Dialog
+    // Dialog
     implementation("com.maxkeppeler.sheets-compose-dialogs:core:1.2.0")
     implementation("com.maxkeppeler.sheets-compose-dialogs:info:1.2.0")
     implementation("com.maxkeppeler.sheets-compose-dialogs:state:1.2.0")

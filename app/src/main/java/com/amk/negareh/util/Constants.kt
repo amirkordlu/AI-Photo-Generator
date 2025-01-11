@@ -7,7 +7,7 @@ const val RSA_KEY =
 
 const val BASE_URL = "https://api.avalai.ir/v1/"
 
-const val API_KEY = "aa-z7yM9Ya5rjYnQKSbrVUKNNY7fZajBc6afsJXVM5ZAEcifYFS"
+const val API_KEY = "aa-IiMdn4XBeBE3fvZNDvsXrsPpbrr24XOBLjkjg4QJjuWEfp1h"
 
 val PROMPT_KEY = stringPreferencesKey("prompt_key")
 

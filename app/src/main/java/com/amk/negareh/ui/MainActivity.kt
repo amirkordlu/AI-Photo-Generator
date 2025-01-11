@@ -21,13 +21,18 @@ import com.amk.negareh.ui.features.resultScreen.PhotoResultScreen
 import com.amk.negareh.ui.features.shopScreen.ShopScreen
 import com.amk.negareh.ui.theme.PhotoGeneratorTheme
 import com.amk.negareh.util.MyScreens
+import com.google.firebase.analytics.FirebaseAnalytics
+import com.google.firebase.analytics.ktx.analytics
+import com.google.firebase.ktx.Firebase
 import dev.burnoo.cokoin.Koin
 import dev.burnoo.cokoin.navigation.KoinNavHost
 import org.koin.android.ext.koin.androidContext
 
 class MainActivity : ComponentActivity() {
+    private lateinit var analytics: FirebaseAnalytics
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        analytics = Firebase.analytics
         window.decorView.layoutDirection = View.LAYOUT_DIRECTION_LTR
         setContent {
             Koin(appDeclaration = {
