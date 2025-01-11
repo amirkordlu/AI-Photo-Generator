@@ -53,6 +53,7 @@ import com.amk.negareh.ui.theme.bodySmallCard
 import com.amk.negareh.util.MyScreens
 import com.amk.negareh.util.NetworkChecker
 import com.amk.negareh.util.RSA_KEY
+import com.amk.negareh.util.sendEmail
 import com.maxkeppeker.sheets.core.CoreDialog
 import com.maxkeppeker.sheets.core.models.CoreSelection
 import com.maxkeppeker.sheets.core.models.base.Header
@@ -405,6 +406,16 @@ fun ShopScreen() {
             )
 
         }
+
+        Text(
+            modifier = Modifier
+                .padding(vertical = 24.dp)
+                .clickable {
+                   sendEmail(context,"amir.kordlu@gmail.com")
+                },
+            text = "نیاز به پشتیبانی داری؟ کلیک کن",
+            style = Typography.bodyMedium
+        )
 
     }
 }

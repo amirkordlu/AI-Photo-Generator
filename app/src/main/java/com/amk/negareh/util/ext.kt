@@ -1,9 +1,14 @@
 package com.amk.negareh.util
 
+import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import android.util.Log
+import androidx.core.content.ContextCompat.startActivity
 import com.amk.negareh.model.data.PhotoGeneratorDallEResponse
 import kotlinx.coroutines.CoroutineExceptionHandler
 import java.util.Calendar
+
 
 fun getCurrentTime(): String {
     val c = Calendar.getInstance()
@@ -42,3 +47,7 @@ val coroutineExceptionHandler = CoroutineExceptionHandler { _, throwable ->
 
 val PGDEX = PhotoGeneratorDallEResponse(0, listOf())
 
+fun sendEmail(context: Context, email: String) {
+    val emailIntent = Intent(Intent.ACTION_SENDTO, Uri.fromParts("mailto", email, null))
+    startActivity(context, Intent.createChooser(emailIntent, "Send Email..."), null)
+}

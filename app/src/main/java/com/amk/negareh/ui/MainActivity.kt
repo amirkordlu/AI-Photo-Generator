@@ -52,7 +52,7 @@ fun PhotoGeneratorUI() {
     val navController = rememberNavController()
     KoinNavHost(
         navController = navController,
-        startDestination = MyScreens.ShopScreen.route
+        startDestination = MyScreens.MainScreen.route
     ) {
 
         composable(MyScreens.MainScreen.route) {

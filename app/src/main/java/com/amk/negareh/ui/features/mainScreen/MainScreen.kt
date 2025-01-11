@@ -1,8 +1,13 @@
 package com.amk.negareh.ui.features.mainScreen
 
+import android.Manifest
+import android.os.Build
 import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -23,6 +28,9 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -30,9 +38,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.ContextCompat
 import com.amk.negareh.R
 import com.amk.negareh.ui.theme.PhotoGeneratorTheme
 import com.amk.negareh.ui.theme.Typography
@@ -41,6 +51,11 @@ import com.amk.negareh.ui.theme.bodyMediumCard
 import com.amk.negareh.ui.theme.bodySmallCard
 import com.amk.negareh.util.MyScreens
 import com.amk.negareh.util.getCurrentTime
+import com.amk.negareh.util.sendEmail
+import com.maxkeppeker.sheets.core.CoreDialog
+import com.maxkeppeker.sheets.core.models.CoreSelection
+import com.maxkeppeker.sheets.core.models.base.Header
+import com.maxkeppeker.sheets.core.models.base.UseCaseState
 import dev.burnoo.cokoin.navigation.getNavController
 
 @Preview(showBackground = true)
@@ -60,10 +75,33 @@ fun MainScreen() {
     val navigation = getNavController()
     val context = LocalContext.current
 
+    // Check and grant notification permission
+    val notificationPermissionGranted = remember { mutableStateOf(false) }
+    val permissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission(),
+    ) { isGranted ->
+        notificationPermissionGranted.value = isGranted
+    }
+    val hasNotificationPermission = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        ContextCompat.checkSelfPermission(
+            context,
+            Manifest.permission.POST_NOTIFICATIONS
+        ) == android.content.pm.PackageManager.PERMISSION_GRANTED
+    } else {
+        true
+    }
+    if (!hasNotificationPermission && Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        SideEffect {
+            permissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+        }
+    }
+    //
+
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .verticalScroll(rememberScrollState())
+            .verticalScroll(rememberScrollState()),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
         MainToolbar {
             navigation.navigate(MyScreens.LoginScreen.route) {
@@ -119,6 +157,16 @@ fun MainScreen() {
             },
             R.drawable.img_card_change,
             "تغییر چهره", "!تعویضش کن", true
+        )
+
+        Text(
+            modifier = Modifier
+                .padding(bottom = 24.dp)
+                .clickable {
+                    sendEmail(context, "amir.kordlu@gmail.com")
+                },
+            text = "نیاز به پشتیبانی داری؟ کلیک کن",
+            style = Typography.bodyMedium
         )
 
     }
@@ -249,4 +297,32 @@ fun MainCard(
             }
         }
     }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun RequestNotificationDialog(dialogState: UseCaseState) {
+    CoreDialog(
+        state = dialogState,
+        selection = CoreSelection(
+            withButtonView = false,
+        ),
+        header = Header.Custom {
+            Text(
+                text = "دسترسی نوتیفیکیشن",
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(20.dp),
+                style = Typography.bodyLarge
+            )
+        },
+        onPositiveValid = true,
+        body = {
+            Text(
+                text = "برای اطلاع رسانی از تخفیف‌ها و ویژگی‌های جدید نگاره لطفا دسترسی نوتیفیکیشن رو به نگاره بده که به موقع خبردار شی :)",
+                textAlign = TextAlign.Right,
+                style = Typography.bodyMedium
+            )
+        }
+    )
 }
