@@ -4,11 +4,11 @@ plugins {
 }
 
 android {
-    namespace = "com.amk.photogenerator"
+    namespace = "com.amk.negareh"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.amk.photogenerator"
+        applicationId = "com.amk.negareh"
         minSdk = 21
         targetSdk = 34
         versionCode = 1
