@@ -165,6 +165,8 @@ fun PhotoGeneratorScreen() {
                         .show()
                 } else if (!NetworkChecker(context).isInternetConnected) {
                     Toast.makeText(context, "اینترنت نداری :(", Toast.LENGTH_SHORT).show()
+                } else if (accountViewModel.points.value == 0) {
+                    Toast.makeText(context, "سکه‌هات کافی نیست :(", Toast.LENGTH_SHORT).show()
                 } else {
                     scope.launch {
                         savePrompt(context, promt)
